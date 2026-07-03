@@ -9,7 +9,7 @@ Adicionar identidade estável e controle de versão às entidades sincronizávei
 2. Índice por `atualizado_em`; único por `uuid`. Espelhar no db.
 
 ## Onde mexer
-- `.../db/migration/V21__colunas_sincronizacao.sql`, entidades de domínio
+- `.../db/migration/V22__colunas_sincronizacao.sql`, entidades de domínio
 
 ## Critério de pronto (DoD)
 - [ ] Flyway aplica V22; entidades expõem os novos campos

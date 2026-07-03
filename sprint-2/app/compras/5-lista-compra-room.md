@@ -5,7 +5,7 @@
 Espelhar Lista de Compra no banco local (Room).
 
 ## Passo a passo
-1. `data/local/entity/ListaCompraEntity.kt` (`@Entity("lista_compra")`) com: nome, tipo, carteira, data, status (ABERTA/FECHADA/ARQUIVADA).
+1. `data/local/entity/ListaCompraEntity.kt` (`@Entity("lista_compra")`) com: nome, tipo, carteira, data, status.
 2. `data/local/dao/ListaCompraDao.kt` (insert/update/delete/getAll Flow/getById).
 3. Registrar em `AppDatabase` (bump da `version` + migração).
 

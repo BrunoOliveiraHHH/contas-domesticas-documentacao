@@ -6,10 +6,9 @@ Listar as listas do usuário, inclusive as não fechadas (para reutilização).
 
 ## Passo a passo
 1. `GET /api/v1/listas-compra?status=` retorna ABERTA/FECHADA/ARQUIVADA.
-2. Permitir `ARQUIVADA` (não virou despesa, mas fica guardada).
 
 ## Onde mexer
-- `.../controller/ListaCompraController`, `.../service`
+- `.../controller/ListaCompraController`
 
 ## Critério de pronto (DoD)
 - [ ] Listas não fechadas permanecem acessíveis no histórico

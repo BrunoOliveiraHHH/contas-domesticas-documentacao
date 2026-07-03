@@ -2,10 +2,10 @@
 > Sprint 3 (05/08–19/08/2026) · Bloco: Compras · Item Reutilização · Depende: ListaCompra
 
 ## O que fazer
-Permitir criar uma nova lista a partir de uma existente (reaproveitar itens).
+Criar uma nova lista a partir de uma existente (reaproveitar itens/produtos).
 
 ## Passo a passo
-1. `POST /api/v1/listas-compra/{id}/duplicar`: copia itens (produto/quantidade/unidade), status `ABERTA`, sem cotações/escolhas/preços.
+1. `POST /api/v1/listas-compra/{id}/duplicar`: copia os itens (produto + quantidade), status `ABERTA`, sem escolha/preço fixado.
 
 ## Onde mexer
 - `.../service/ListaCompraService` (duplicar)

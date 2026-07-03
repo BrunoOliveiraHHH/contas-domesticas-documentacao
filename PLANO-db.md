@@ -146,7 +146,15 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
 - **Notas:** soma dos percentuais = 100% (ou soma dos valores = total) validada na API.
 - **Depende:** 9.
 
-## 13. Lista de Compra  *(V15)*
+## 13. Produto (catálogo)  *(V15)*
+
+- **Tabela `produto`:** `id`, `nome varchar(150)`, `descricao varchar(300)`, `categoria_id bigint`,
+  `unidade_medida_padrao_id bigint`, `codigo_barras varchar(60)`, `ativo boolean default true`,
+  auditáveis. **Catálogo reutilizável** entre listas.
+- **Chaves/índices:** `pk_produto`; `fk_produto_categoria/unidade_medida_padrao`; `ix_produto_nome`.
+- **Depende:** 3, 6.
+
+## 14. Lista de Compra  *(V16)*
 
 - **Tabela `lista_compra`:** `id`, `nome varchar(150)`, `tipo varchar(15)`
   (MANTIMENTOS/CONSTRUCAO), `carteira_id bigint`, `data date`,
@@ -155,39 +163,30 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
   ligação `lista_compra_despesa` (decidir na análise).
 - **Chaves/índices:** `pk_lista_compra`; `fk_lista_compra_carteira`; `ix_lista_compra_status`.
 - **Notas:** listas não fechadas permanecem no histórico (reutilizáveis via duplicar).
-- **Depende:** 2, 9.
+- **Depende:** 2.
 
-## 14. Item de Compra  *(V16)*
+## 15. Item de Compra  *(V17)*
 
-- **Tabela `item_compra`:** `id`, `lista_compra_id bigint`, `produto varchar(150)`,
-  `categoria_id bigint`, `quantidade numeric(12,3)`, `unidade_medida_id bigint`,
-  `mercado_escolhido_id bigint`, `preco_unitario numeric(15,2)` (do estabelecimento escolhido),
-  `comprado boolean default false`, auditáveis.
+- **Tabela `item_compra`:** `id`, `lista_compra_id bigint`, `produto_id bigint` (catálogo),
+  `quantidade numeric(12,3)`, `unidade_medida_id bigint`, `mercado_escolhido_id bigint`,
+  `preco_unitario numeric(15,2)` (snapshot da cotação escolhida), `comprado boolean default false`,
+  auditáveis.
 - **Chaves/índices:** `pk_item_compra`; `fk_item_compra_lista` → `lista_compra(id)` (on delete
-  cascade); `fk_item_compra_categoria/unidade_medida`; `fk_item_compra_mercado_escolhido` →
-  `mercado(id)`; `ix_item_compra_lista`.
-- **Depende:** 13, 6, 3.
+  cascade); `fk_item_compra_produto` → `produto(id)`; `fk_item_compra_unidade_medida`;
+  `fk_item_compra_mercado_escolhido` → `mercado(id)`; `ix_item_compra_lista`.
+- **Depende:** 13, 14, 6.
 
-## 14b. Cotação de Item  *(V21)*
+## 16. Cotação de Produto (reutilizável)  *(V18)*
 
-- **Tabela `cotacao_item`:** `id`, `item_compra_id bigint`, `mercado_id bigint`,
-  `preco_unitario numeric(15,2)`, `data date`, auditáveis. **Várias por item** (uma por
-  estabelecimento) — base da comparação/escolha.
-- **Chaves/índices:** `pk_cotacao_item`; `fk_cotacao_item` → `item_compra(id)` (on delete cascade);
-  `fk_cotacao_mercado` → `mercado(id)`; `ix_cotacao_item`.
-- **Depende:** 14, 5.
+- **Tabela `cotacao_produto`:** `id`, `produto_id bigint`, `mercado_id bigint`,
+  `preco_unitario numeric(15,2)`, `data date`, `origem varchar(10)` (COTACAO/COMPRA), auditáveis.
+  **Várias por produto** (uma por estabelecimento, com histórico) — base da comparação/escolha e do
+  preço realizado no fechamento. **Substitui o antigo `preco_historico`.**
+- **Chaves/índices:** `pk_cotacao_produto`; `fk_cotacao_produto` → `produto(id)`;
+  `fk_cotacao_mercado` → `mercado(id)`; `ix_cotacao_produto_mercado`.
+- **Depende:** 13, 5.
 
-## 15. Histórico de Preço  *(V17)*
-
-- **Tabela `preco_historico`:** `id`, `produto_normalizado varchar(150)`, `mercado_id bigint`,
-  `unidade_medida_id bigint`, `preco_unitario numeric(15,2)`, `data date`.
-- **Chaves/índices:** `pk_preco_historico`; `fk_preco_historico_mercado/unidade_medida`;
-  `ix_preco_historico_produto`, `ix_preco_historico_produto_mercado`.
-- **Notas:** preço **realizado**, gravado no **fechamento** da lista; base da tendência de preço entre
-  listas (a comparação pré-compra é a `cotacao_item`).
-- **Depende:** 5, 6 (e o fechamento como gatilho).
-
-## 16. Investimento  *(V18)*
+## 17. Investimento  *(V19)*
 
 - **Tabela `investimento`:** `id`, `nome varchar(150)`, `tipo_investimento varchar(25)`
   (RENDA_FIXA/RENDA_VARIAVEL/FUNDO/CRIPTO/PREVIDENCIA/POUPANCA/RESERVA_EMERGENCIA),
@@ -197,16 +196,16 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
   `ix_investimento_tipo`.
 - **Depende:** 2.
 
-## 17. Aporte  *(V19)*
+## 18. Aporte  *(V20)*
 
 - **Tabela `aporte`:** `id`, `investimento_id bigint`, `valor numeric(15,2)`, `data date`,
   `tipo varchar(10)` (APORTE/RESGATE), auditáveis.
 - **Chaves/índices:** `pk_aporte`; `fk_aporte_investimento` → `investimento(id)` (on delete cascade);
   `ix_aporte_investimento_data`.
 - **Notas:** saldo aplicado = Σ APORTE − Σ RESGATE (calculado na API).
-- **Depende:** 16.
+- **Depende:** 17.
 
-## 18. Posição de Investimento  *(V20)*
+## 19. Posição de Investimento  *(V21)*
 
 - **Tabela `posicao_investimento`:** `id`, `investimento_id bigint`, `data date`,
   `saldo_bruto numeric(15,2)`, `rendimento_acumulado numeric(15,2)`.
@@ -214,26 +213,26 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
   `uk_posicao_investimento_data (investimento_id, data)`.
 - **Notas:** snapshot manual ou calculado pelo indexador/parametro vigente; base da evolução
   patrimonial.
-- **Depende:** 16, 7.
+- **Depende:** 17, 7.
 
-## 19. Preferência de rateio / dados auxiliares
+## 20. Preferência de rateio / dados auxiliares
 
 - **O que é:** eventuais tabelas de apoio que surgirem (ex.: `regra_rateio` reutilizável). Manter como
   placeholder; criar só se a modelagem da API pedir.
 - **Depende:** 12.
 
-## 20. Colunas de Sincronização  *(V22)*
+## 21. Colunas de Sincronização  *(V22)*
 
 - **O que é:** habilitar o sync/merge em todas as tabelas de domínio sincronizáveis.
 - **Alteração:** adicionar `uuid uuid` (identidade estável do cliente, `uk_<tabela>_uuid`),
   `versao bigint default 0`, `atualizado_em timestamptz`, `deletado boolean default false` em
   `carteira`, `categoria`, `forma_pagamento`, `mercado`, `unidade_medida`, `parametro`, `preferencia`,
-  `lancamento`, `recorrencia`, `parcela`, `rateio`, `participante_rateio`, `lista_compra`,
-  `item_compra`, `cotacao_item`, `preco_historico`, `investimento`, `aporte`, `posicao_investimento`.
+  `lancamento`, `recorrencia`, `parcela`, `rateio`, `participante_rateio`, `produto`, `lista_compra`,
+  `item_compra`, `cotacao_produto`, `investimento`, `aporte`, `posicao_investimento`.
 - **Índices:** `ix_<tabela>_atualizado_em` para os deltas; `uk_<tabela>_uuid`.
 - **Notas:** `deletado=true` funciona como tombstone; `versao` detecta conflito; merge é
   **last-write-wins** por `atualizado_em`.
-- **Depende:** 2–18.
+- **Depende:** 2–19.
 
 ---
 

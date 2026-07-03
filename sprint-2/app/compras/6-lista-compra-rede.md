@@ -2,7 +2,7 @@
 > Sprint 2 (21/07–04/08/2026) · Bloco: Compras · Item: Lista de Compra · Passo 2/4 · Depende: Passo 1 (Room)
 
 ## O que fazer
-Consumir a API de Lista de Compra e criar o repositório (Room + API).
+Consumir a API de Lista de Compra e criar o repositório.
 
 ## Passo a passo
 1. `data/remote/ListaCompraApi.kt` (endpoints `/api/v1/listas-compra`).

@@ -6,7 +6,7 @@ Criar o service com o CRUD e as regras de negócio do ItemCompra.
 
 ## Passo a passo
 1. `service/ItemCompraService.java` (`@Service`, `@RequiredArgsConstructor`): listar, buscarPorId, criar, atualizar, remover.
-2. Regras específicas: o preço vem da cotação do estabelecimento escolhido; marcar comprado exige estabelecimento escolhido.
+2. Regras específicas: o item referencia um produto do catálogo; o preço vem da cotação do produto no estabelecimento escolhido; marcar comprado exige escolha.
 3. Lançar `AplicacaoException(mensagem, HttpStatus)` nos erros (404, 409, 400 conforme o caso).
 
 ## Onde mexer
@@ -17,4 +17,4 @@ Criar o service com o CRUD e as regras de negócio do ItemCompra.
 - [ ] Erros usam `AplicacaoException` (ProblemDetail)
 
 ## Como testar
-`ItemCompraServiceTest` (Mockito): preço a partir do estabelecimento escolhido; regra de comprado.
+`ItemCompraServiceTest` (Mockito): referência ao catálogo; preço do estabelecimento escolhido; regra de comprado.

@@ -258,61 +258,51 @@ H2 (profile `test`). Segurança hoje é `permitAll` temporário até o JWT entra
 - **Aceite:** rateio válido; acerto do mês retorna o líquido de cada um.
 - **Testes:** service (igual/proporcional/custom + validação da soma), controller (acerto).
 
-## 20. Compras — Lista
+## 20. Compras — Produto (catálogo)
 
-- **O que é:** a lista de compras (mantimentos ou construção).
+- **O que é:** um **catálogo reutilizável** de produtos; o item da lista referencia um produto (não
+  texto livre), então preços/cotações se reaproveitam entre listas.
+- **Entidade `Produto`** (extends `EntidadeAuditavel`): `nome`, `descricao`, `categoria` (opcional),
+  `unidadeMedidaPadrao` (opcional), `codigoBarras` (opcional), `ativo`.
+- **Endpoints:** `/api/v1/produtos` (CRUD) + busca por nome/categoria.
+- **Depende:** 7, 10.
+- **Aceite:** CRUD; produto reaproveitado em várias listas.
+
+## 21. Compras — Lista
+
 - **Entidade `ListaCompra`** (extends `EntidadeAuditavel`): `nome`, `tipo`
   (`MANTIMENTOS`/`CONSTRUCAO`), `carteira`, `data`, `status` (`ABERTA`/`FECHADA`/`ARQUIVADA`).
-  O estabelecimento é escolhido **por item** (não há mercado único da lista). Listas **não fechadas
-  permanecem no histórico** (reutilizáveis via duplicar). Fechar gera **1 despesa por estabelecimento**
-  (vínculo 1-N).
-- **Endpoints:** `/api/v1/listas-compra` (CRUD, filtro por status inclui não fechadas) +
-  `/{id}/duplicar` (reutilizar).
-- **Depende:** 6, 9.
-- **Aceite:** CRUD; totais estimado/real derivados dos itens.
-- **Testes:** repository (totais), controller (CRUD).
+  O estabelecimento é escolhido **por item**. Listas **não fechadas permanecem no histórico**
+  (reutilizáveis via duplicar). Fechar gera **1 despesa por estabelecimento** (vínculo 1-N).
+- **Endpoints:** `/api/v1/listas-compra` (CRUD, filtro por status) + `/{id}/duplicar`.
+- **Depende:** 6.
 
-## 21. Compras — Item
+## 22. Compras — Item + Cotação de Produto (reutilizável)
 
-- **O que é:** cada produto da lista, com unidade e preço.
-- **Entidade `ItemCompra`** (extends `EntidadeAuditavel`): `listaCompra` (FK), `produto` (descrição),
-  `categoria` (opcional), `quantidade` (BigDecimal), `unidadeMedida` (FK), `mercadoEscolhido` (FK),
-  `precoUnitario` (do estabelecimento escolhido), `comprado` (boolean).
-- **Cotação (`CotacaoItem`):** `itemCompra` (FK), `mercado` (FK), `precoUnitario` — **várias por item**,
-  para **comparar** (menor preço por unidade base) e **escolher** onde comprar. `PUT /itens/{id}/escolha`
-  grava o `mercadoEscolhido` e copia o preço da cotação escolhida.
-- **Endpoints:** `/api/v1/listas-compra/{id}/itens` (CRUD).
-- **Regras:** total do item = `quantidade × preço` (real se comprado, senão estimado); marcar comprado
-  exige `precoUnitarioReal`.
-- **Depende:** 20, 10.
-- **Aceite:** CRUD; totais e regra de "comprado exige preço real".
-- **Testes:** service (cálculo do total + regra comprado), controller.
-
-## 22. Compras — Histórico de preço
-
-- **O que é:** registrar o preço praticado por produto/mercado para comparar ao longo do tempo.
-- **Entidade `PrecoHistorico`** (extends `BaseEntity`): `produtoNormalizado`, `mercado`,
-  `unidadeMedida`, `precoUnitario`, `data`.
-- **Gatilho:** ao marcar item como comprado (item 21), grava um `PrecoHistorico`.
-- **Endpoints:** `GET /api/v1/precos?produto=&mercado=` (histórico e menor preço por unidade base).
-- **Regras:** normaliza o preço para a unidade base (via `fatorParaBase`) para comparação justa.
-- **Depende:** 21, 9, 10.
-- **Aceite:** compra alimenta o histórico; consulta retorna evolução e menor preço/unidade.
-- **Testes:** service (normalização + menor preço), controller.
+- **Entidade `ItemCompra`** (extends `EntidadeAuditavel`): `listaCompra` (FK), `produto` (FK catálogo),
+  `quantidade`, `unidadeMedida` (FK), `mercadoEscolhido` (FK), `precoUnitario` (snapshot da cotação
+  escolhida), `comprado`.
+- **Entidade `CotacaoProduto`** (extends `BaseEntity`): `produto` (FK), `mercado` (FK), `precoUnitario`,
+  `data`, `origem` (`COTACAO`/`COMPRA`) — **várias por produto** (uma por estabelecimento, com
+  histórico). É a cotação **reutilizável** e **substitui o antigo `PrecoHistorico`** (o preço realizado
+  entra como `origem=COMPRA`).
+- **Endpoints:** `/api/v1/produtos/{id}/cotacoes` (registrar/listar, ordenado por preço/unidade base);
+  `PUT /api/v1/itens/{id}/escolha` (grava `mercadoEscolhido` + snapshot do preço).
+- **Regras:** comparação normaliza pela unidade base (`fatorParaBase`); marcar comprado exige escolha.
+- **Depende:** 20, 21, 9, 10.
+- **Aceite:** cotações do produto reaproveitáveis; menor preço destacado; escolha grava o item.
 
 ## 23. Compras — Fechar lista → gera despesa por estabelecimento
 
 - **O que é:** ao concluir a compra, **agrupar os itens pelo estabelecimento escolhido** e criar **uma
-  despesa por estabelecimento** (afinal se paga separado em cada loja).
+  despesa por estabelecimento**.
 - **Endpoint:** `POST /api/v1/listas-compra/{id}/fechar` → para cada `mercadoEscolhido` cria um
-  `Lancamento` (`DESPESA`, valor = total daquele estabelecimento), marca `status=FECHADA`, vincula as
-  despesas à lista (1-N) e grava o `PrecoHistorico` dos itens.
+  `Lancamento` (`DESPESA`, total do estabelecimento), marca `status=FECHADA`, vincula as despesas à
+  lista (1-N) e grava no catálogo uma `CotacaoProduto` `origem=COMPRA` (preço realizado).
 - **Regras:** idempotente (lista já fechada não gera novas despesas); item exige estabelecimento
-  escolhido. Listas **não** fechadas ficam como `ABERTA`/`ARQUIVADA` no histórico e podem ser
-  **duplicadas** para reutilização.
-- **Depende:** 20, 21, 16.
-- **Aceite:** fechar gera 1 despesa com o total correto e vínculo; refechar não duplica.
-- **Testes:** service (geração única + total), controller (fluxo fechar).
+  escolhido. Listas **não** fechadas ficam `ABERTA`/`ARQUIVADA` no histórico e podem ser **duplicadas**.
+- **Depende:** 21, 22, 16.
+- **Aceite:** fechar gera 1 despesa por estabelecimento; refechar não duplica.
 
 ## 24. Investimento — cadastro e aportes
 

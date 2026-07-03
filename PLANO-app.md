@@ -185,28 +185,29 @@ será construída (hoje só a infra existe).
 - **Depende:** 18, api-19.
 - **Aceite:** rateio válido (soma 100%); acerto do período correto.
 
-## 22. Compras — Lista (Room + Tela)
+## 22. Compras — Produto (catálogo) + Lista
 
-- **Room:** `ListaCompraEntity` + DAO. **Telas:** histórico de listas (ABERTA/FECHADA/ARQUIVADA) + form
-  (nome, tipo, carteira). **Integração:** `ListaCompraApi`. Listas não fechadas ficam no histórico e
-  podem ser **duplicadas** (reutilização).
+- **Room:** `ProdutoEntity` + `ListaCompraEntity` + DAOs. **Telas:** catálogo de produtos (reutilizável)
+  e histórico de listas (ABERTA/FECHADA/ARQUIVADA) + form (nome, tipo, carteira). **Integração:**
+  `ProdutoApi`/`ListaCompraApi`. Listas não fechadas ficam no histórico e podem ser **duplicadas**.
 - **Depende:** 8, 11.
-- **Aceite:** CRUD; histórico com filtro por status; subtotais por estabelecimento.
+- **Aceite:** CRUD de produto e lista; histórico com filtro por status; subtotais por estabelecimento.
 
-## 23. Compras — Item + escolha de estabelecimento
+## 23. Compras — Item (do catálogo) + escolha de estabelecimento
 
-- **Room:** `ItemCompraEntity` + DAO. **Telas:** adicionar/editar item (produto, categoria, quantidade,
-  unidade) e **escolher o estabelecimento** (grava o mercado escolhido; preço vem da cotação).
-- **Depende:** 22, 12, api-21.
-- **Aceite:** item com estabelecimento escolhido e preço correspondente.
+- **Room:** `ItemCompraEntity` + DAO. **Telas:** adicionar item **selecionando um produto do catálogo**
+  + quantidade, e **escolher o estabelecimento** (grava o mercado escolhido; preço vem da cotação).
+- **Depende:** 22, 12, api-item.
+- **Aceite:** item vinculado a um produto do catálogo, com estabelecimento e preço escolhidos.
 
-## 24. Compras — Cotação e comparação de preços
+## 24. Compras — Cotação de produto e comparação (reutilizável)
 
-- **O que é:** cadastrar o preço do item em vários estabelecimentos, comparar e escolher onde comprar.
-- **Telas:** adicionar cotações (estabelecimento + preço) por item; lista ordenada por preço/unidade,
-  com destaque do menor. (Histórico de preço realizado alimenta a tendência entre listas.)
-- **Depende:** 23, api-cotação.
-- **Aceite:** comparação por preço/unidade; menor preço destacado.
+- **O que é:** cadastrar o preço do **produto** em vários estabelecimentos, comparar e reaproveitar em
+  qualquer lista.
+- **Telas:** na ficha do produto, adicionar cotações (estabelecimento + preço); lista ordenada por
+  preço/unidade, com destaque do menor. (Preço realizado no fechamento entra como `origem=COMPRA`.)
+- **Depende:** 23, api-cotação-produto.
+- **Aceite:** cotações do produto reaproveitáveis; menor preço destacado.
 
 ## 25. Compras — Fechar lista → despesa por estabelecimento
 

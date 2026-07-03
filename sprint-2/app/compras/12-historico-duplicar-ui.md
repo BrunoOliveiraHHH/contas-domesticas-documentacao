@@ -12,7 +12,7 @@ Ver o histórico de listas (inclusive não fechadas) e reutilizá-las.
 - `ui/compras/*`
 
 ## Critério de pronto (DoD)
-- [ ] Listas não fechadas ficam acessíveis; duplicar reaproveita os itens
+- [ ] Listas não fechadas acessíveis; duplicar reaproveita itens/produtos
 
 ## Como testar
 Verificação estática + build no Android Studio.

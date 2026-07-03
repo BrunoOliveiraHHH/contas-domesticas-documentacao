@@ -5,7 +5,7 @@
 Fechar a lista gerando as despesas por estabelecimento.
 
 ## Passo a passo
-1. Ação "Fechar": mostra o resumo por estabelecimento e confirma.
+1. Ação "Fechar": resumo por estabelecimento → confirma.
 2. Exibe as despesas geradas (uma por loja escolhida).
 
 ## Onde mexer

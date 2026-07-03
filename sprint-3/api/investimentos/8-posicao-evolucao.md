@@ -5,7 +5,7 @@
 Registrar posições e expor a evolução e o patrimônio consolidado.
 
 ## Passo a passo
-1. Migração `V20` da tabela `posicao_investimento` (investimento_id, data, saldo_bruto, rendimento_acumulado); espelhar no db.
+1. Migração `V21` da tabela `posicao_investimento` (investimento_id, data, saldo_bruto, rendimento_acumulado); espelhar no db.
 2. `GET /api/v1/investimentos/{id}/evolucao` e `GET /api/v1/investimentos/patrimonio?data=`.
 3. Estimar rendimento pelo índice vigente quando não houver saldo informado.
 

@@ -5,7 +5,7 @@
 Registrar aportes/resgates e calcular o saldo aplicado.
 
 ## Passo a passo
-1. Migração `V19` da tabela `aporte` (investimento_id, valor, data, tipo APORTE/RESGATE); espelhar no db.
+1. Migração `V20` da tabela `aporte` (investimento_id, valor, data, tipo APORTE/RESGATE); espelhar no db.
 2. `domain/Aporte` + repositório.
 3. `/api/v1/investimentos/{id}/aportes` (CRUD); saldo aplicado = soma aportes - soma resgates.
 

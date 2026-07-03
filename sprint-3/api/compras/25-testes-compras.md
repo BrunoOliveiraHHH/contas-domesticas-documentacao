@@ -5,7 +5,7 @@
 Fechar a cobertura do bloco de compras.
 
 ## Passo a passo
-1. Cotação/comparação/escolha; fechar por estabelecimento; duplicar; histórico.
+1. Catálogo de produtos; cotação/comparação/escolha; fechar por estabelecimento; duplicar; histórico.
 
 ## Onde mexer
 - `src/test/java/.../compras/*`

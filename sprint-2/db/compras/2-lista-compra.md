@@ -1,8 +1,8 @@
 # Tarefa — Tabela `lista_compra` (DDL) · DB
-> Sprint 2 (21/07–04/08/2026) · Bloco: Compras · Item: lista_compra · Depende: espelha Flyway V15 da API
+> Sprint 2 (21/07–04/08/2026) · Bloco: Compras · Item: lista_compra · Depende: espelha Flyway V16 da API
 
 ## O que fazer
-Criar os scripts DDL separados de `lista_compra`, espelho da migração Flyway **V15** da API.
+Criar os scripts DDL separados de `lista_compra`, espelho da migração Flyway **V16** da API.
 
 ## Passo a passo
 1. `ddl/tables/lista_compra.sql`: id `bigint generated always as identity` + nome, tipo, carteira_id, data, status (ABERTA/FECHADA/ARQUIVADA) + auditoria.
@@ -14,7 +14,7 @@ Criar os scripts DDL separados de `lista_compra`, espelho da migração Flyway *
 - `contas-domesticas-db/ddl/{tables,primary,foreign,index}/lista_compra.sql`
 
 ## Critério de pronto (DoD)
-- [ ] Scripts refletem o Flyway V15; nomes `pk_`/`uk_`/`ix_`/`fk_` consistentes
+- [ ] Scripts refletem o Flyway V16; nomes `pk_`/`uk_`/`ix_`/`fk_` consistentes
 
 ## Como testar
-Conferir contra a migração V15; rodar em banco limpo.
+Conferir contra a migração V16; rodar em banco limpo.
