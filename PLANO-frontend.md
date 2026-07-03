@@ -1,8 +1,8 @@
 # Plano de Desenvolvimento — Frontend Web (`contas-domesticas-front`)
 
-> Contas Domésticas · SPA **Vue 3 + Quasar CLI (Vite)** / Pinia / Vue Router / Axios
-> Roadmap **completo e detalhado**, item a item (sem agrupar). A **ordem** segue a dependência
-> técnica; cada item traz componentes, integração, regras, dependências e aceite.
+> Contas Domésticas · SPA **Vue 3 + Quasar (app-vite v2) + TypeScript** · Pinia · Vue Router · Axios
+> **Node 24** (`.nvmrc`, via NVS). Roadmap **completo e detalhado**, item a item (sem agrupar). A
+> **ordem** segue a dependência técnica; cada item traz componentes, integração, regras e aceite.
 
 ## Visão
 
@@ -13,16 +13,21 @@ comparar/escolher, fechar por loja, reutilizar listas), **investimentos**, **cal
 **online** — fala direto com a API, sem banco local nem sincronização.
 
 ### Convenções aplicadas a todos os itens
-- **Stack:** Vue 3 (`<script setup>`, Composition API), **Quasar v2** (CLI Vite), **Pinia** (estado),
-  **Vue Router**, **Axios** (boot com `baseURL` da API + interceptors).
-- **Estrutura:** `src/` → `boot/` (axios), `layouts/` (MainLayout), `pages/`, `components/`,
-  `stores/` (Pinia), `router/` (routes.js), `services/` (chamadas à API), `composables/`, `css/`.
-- **Padrão por feature (CRUD):** `services/<x>.js` (Axios) → `stores/<x>.js` (Pinia) → `pages`
-  (lista com `QTable` + formulário `QDialog`/`QForm` com validação) → rota + item no menu.
+- **Stack:** Vue 3 (`<script setup lang="ts">`, Composition API), **Quasar v2** (**app-vite v2**,
+  wrappers `#q-app/wrappers`), **TypeScript**, **Pinia** (estado, com `pinia-plugin-persistedstate`),
+  **Vue Router**, **Axios** (boot com `baseURL` da API + `axios-retry` + interceptors). **Node 24**.
+- **Estrutura:** `src/` → `boot/` (axios, vue-query, i18n, echarts), `layouts/` (MainLayout), `pages/`,
+  `components/`, `stores/` (Pinia), `router/` (routes.ts), `services/` (chamadas à API),
+  `composables/`, `i18n/`, `util/` (money/date), `css/`. PWA em `src-pwa/`.
+- **Padrão por feature (CRUD):** `services/<x>.ts` (Axios) → `stores/<x>.ts` (Pinia) → `pages`
+  (lista `QTable` + formulário `QDialog`/`QForm`) → rota + item no menu. Estado de servidor via
+  **@tanstack/vue-query**; validação com **vee-validate + zod**; utilitários com **@vueuse/core**.
 - **UI:** componentes Quasar (`QTable`, `QForm`, `QInput`, `QSelect`, `QDialog`, `QBtn`, `Notify`,
-  `Dialog`); formatação pt-BR (moeda `R$`, datas `America/Sao_Paulo`).
-- **Auth:** JWT no store/`localStorage`; interceptor injeta `Bearer` e renova no 401; **route guards**.
-- **Testes:** unitários com **Vitest**, componentes com **Vue Test Utils**, e2e com **Cypress**.
+  `Dialog`); gráficos com **ECharts** (`<v-chart>`, boot global); i18n **vue-i18n** (pt-BR);
+  moeda com **big.js** (decimal) e datas com **date-fns**.
+- **Auth:** JWT no store persistido; interceptor injeta `Bearer` e renova no 401; **route guards**.
+- **Testes/DX:** **Vitest** (+ `@vue/test-utils`, `@pinia/testing`, jsdom), **Cypress** (e2e),
+  **ESLint + Prettier**, **husky + lint-staged** (pre-commit), `vue-tsc` (`npm run typecheck`).
 - **Escopo (familiar/individual):** derivado da **carteira** selecionada (mesma regra da API).
 
 ## Roadmap por bloco (4 blocos/sprint · 15 dias · início 06/07/2026)
@@ -77,9 +82,10 @@ patrimonial** (gráfico). Depende: lançamentos/investimentos + api-relatórios.
 fluxos-chave (login, criar despesa, fechar lista → despesa).
 
 ## Verificação
-- `quasar dev` (dev server) apontando para a API local; `quasar build` (produção).
-- `vitest` (unit/componentes) e `cypress` (e2e) verdes no CI.
+- Node 24 (`nvs use 24`), `npm install`, `npm run typecheck` (`vue-tsc`).
+- `quasar dev` apontando para a API local; `quasar build` (produção); `build:pwa` para o modo PWA.
+- `vitest` (unit/componentes) e `cypress` (e2e) verdes no CI (GitHub Actions em Node 24).
 
 ## Fora de escopo
-Offline/PWA-sync (o front é online), SSR, i18n multilíngue, temas white-label. (PWA básico pode entrar
-em rodada futura.)
+Sincronização/offline-first (o front é **online**; o PWA dá cache/instalável, não substitui o sync do
+app Android), SSR, i18n multilíngue (só pt-BR por ora), temas white-label.
