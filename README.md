@@ -17,6 +17,7 @@ Ecossistema de repositórios:
 |-------------|-------|
 | `contas-domesticas-api` | Backend Spring Boot (domínio, REST, sincronização) |
 | `contas-domesticas-app` | App Android (offline-first, Room + Compose) |
+| `contas-domesticas-front` | Frontend web (Vue 3 + Quasar CLI, online) |
 | `contas-domesticas-db` | Scripts SQL (espelho do Flyway da API) |
 | `contas-domesticas-documentacao` | **Este repo** — roadmap e tarefas |
 
@@ -26,12 +27,14 @@ Este repositório concentra o **planejamento** (roadmap por projeto) e as **tare
 ## Estrutura
 
 ```
-PLANO-api.md      # roadmap completo da API (itens com dependência/ordem)
-PLANO-app.md      # roadmap completo do app Android
-PLANO-db.md       # roadmap completo do banco (tabela a tabela)
-sprint-1/
-├── api/          # tarefas da sprint por projeto (1-usuario-e-auditoria.md, ...)
-├── app/
+PLANO-api.md        # roadmap completo da API (itens com dependência/ordem)
+PLANO-app.md        # roadmap completo do app Android
+PLANO-front.* → PLANO-frontend.md  # roadmap completo do frontend web (Vue 3 + Quasar)
+PLANO-db.md         # roadmap completo do banco (tabela a tabela)
+sprint-1/ , sprint-2/ , sprint-3/
+├── api/            # tarefas por projeto, organizadas em blocos (tema/) e tarefas júnior
+├── app/            #   ex.: sprint-1/api/autenticacao/2-jwt-service.md
+├── frontend/
 └── db/
 ```
 
