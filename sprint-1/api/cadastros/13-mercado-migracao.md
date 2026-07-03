@@ -6,7 +6,7 @@ Criar a migração Flyway **V7** que cria a tabela `mercado` e espelhar os scrip
 
 ## Passo a passo
 1. Criar `src/main/resources/db/migration/V7__cria_tabela_mercado.sql`.
-2. Colunas: id `bigint generated always as identity` + nome, tipo (SUPERMERCADO/CONSTRUCAO/FARMACIA/OUTRO), endereco, bairro, ativo + auditoria (`criado_em`, `criado_por`, `atualizado_em`, `atualizado_por`).
+2. Colunas: id `bigint generated always as identity` + nome, tipo (SUPERMERCADO/ARMAZEM/MERCEARIA/CONSTRUCAO/FARMACIA/OUTRO), endereco, bairro, ativo + auditoria (`criado_em`, `criado_por`, `atualizado_em`, `atualizado_por`).
 3. Adicionar PK (`pk_mercado`) e índices/único necessários.
 4. Espelhar em `contas-domesticas-db/ddl/{tables,primary,index}/mercado.sql`.
 

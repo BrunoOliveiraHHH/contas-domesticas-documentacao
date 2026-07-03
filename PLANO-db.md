@@ -67,7 +67,7 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
 ## 5. Mercado / Fornecedor  *(V7)*
 
 - **Tabela `mercado`:** `id`, `nome varchar(150)`, `tipo varchar(20)`
-  (SUPERMERCADO/CONSTRUCAO/FARMACIA/OUTRO), `endereco varchar(200)`, `bairro varchar(100)`,
+  (SUPERMERCADO/ARMAZEM/MERCEARIA/CONSTRUCAO/FARMACIA/OUTRO), `endereco varchar(200)`, `bairro varchar(100)`,
   `ativo boolean default true`, auditáveis.
 - **Chaves/índices:** `pk_mercado`; `ix_mercado_tipo`.
 - **Depende:** 1.
@@ -149,21 +149,33 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
 ## 13. Lista de Compra  *(V15)*
 
 - **Tabela `lista_compra`:** `id`, `nome varchar(150)`, `tipo varchar(15)`
-  (MANTIMENTOS/CONSTRUCAO), `mercado_id bigint`, `carteira_id bigint`, `data date`,
-  `status varchar(10)` (ABERTA/FECHADA), `despesa_gerada_id bigint`, auditáveis.
-- **Chaves/índices:** `pk_lista_compra`; `fk_lista_compra_mercado/carteira`;
-  `fk_lista_compra_despesa` → `lancamento(id)`; `ix_lista_compra_status`.
-- **Depende:** 2, 5, 9.
+  (MANTIMENTOS/CONSTRUCAO), `carteira_id bigint`, `data date`,
+  `status varchar(10)` (ABERTA/FECHADA/ARQUIVADA), auditáveis. Sem `mercado_id` (o estabelecimento é
+  por item). Vínculo **1-N** com as despesas geradas: `lancamento.lista_compra_id` **ou** tabela de
+  ligação `lista_compra_despesa` (decidir na análise).
+- **Chaves/índices:** `pk_lista_compra`; `fk_lista_compra_carteira`; `ix_lista_compra_status`.
+- **Notas:** listas não fechadas permanecem no histórico (reutilizáveis via duplicar).
+- **Depende:** 2, 9.
 
 ## 14. Item de Compra  *(V16)*
 
 - **Tabela `item_compra`:** `id`, `lista_compra_id bigint`, `produto varchar(150)`,
   `categoria_id bigint`, `quantidade numeric(12,3)`, `unidade_medida_id bigint`,
-  `preco_unitario_estimado numeric(15,2)`, `preco_unitario_real numeric(15,2)`,
-  `comprado boolean default false`, `mercado_id bigint`, auditáveis.
+  `mercado_escolhido_id bigint`, `preco_unitario numeric(15,2)` (do estabelecimento escolhido),
+  `comprado boolean default false`, auditáveis.
 - **Chaves/índices:** `pk_item_compra`; `fk_item_compra_lista` → `lista_compra(id)` (on delete
-  cascade); `fk_item_compra_categoria/unidade_medida/mercado`; `ix_item_compra_lista`.
+  cascade); `fk_item_compra_categoria/unidade_medida`; `fk_item_compra_mercado_escolhido` →
+  `mercado(id)`; `ix_item_compra_lista`.
 - **Depende:** 13, 6, 3.
+
+## 14b. Cotação de Item  *(V21)*
+
+- **Tabela `cotacao_item`:** `id`, `item_compra_id bigint`, `mercado_id bigint`,
+  `preco_unitario numeric(15,2)`, `data date`, auditáveis. **Várias por item** (uma por
+  estabelecimento) — base da comparação/escolha.
+- **Chaves/índices:** `pk_cotacao_item`; `fk_cotacao_item` → `item_compra(id)` (on delete cascade);
+  `fk_cotacao_mercado` → `mercado(id)`; `ix_cotacao_item`.
+- **Depende:** 14, 5.
 
 ## 15. Histórico de Preço  *(V17)*
 
@@ -171,8 +183,9 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
   `unidade_medida_id bigint`, `preco_unitario numeric(15,2)`, `data date`.
 - **Chaves/índices:** `pk_preco_historico`; `fk_preco_historico_mercado/unidade_medida`;
   `ix_preco_historico_produto`, `ix_preco_historico_produto_mercado`.
-- **Notas:** alimentado ao marcar item como comprado; base da comparação de preço/unidade.
-- **Depende:** 5, 6 (e 14 como gatilho).
+- **Notas:** preço **realizado**, gravado no **fechamento** da lista; base da tendência de preço entre
+  listas (a comparação pré-compra é a `cotacao_item`).
+- **Depende:** 5, 6 (e o fechamento como gatilho).
 
 ## 16. Investimento  *(V18)*
 
@@ -209,14 +222,14 @@ geram tabela. Cada item aqui acompanha uma `V4+` na API.
   placeholder; criar só se a modelagem da API pedir.
 - **Depende:** 12.
 
-## 20. Colunas de Sincronização  *(V21)*
+## 20. Colunas de Sincronização  *(V22)*
 
 - **O que é:** habilitar o sync/merge em todas as tabelas de domínio sincronizáveis.
 - **Alteração:** adicionar `uuid uuid` (identidade estável do cliente, `uk_<tabela>_uuid`),
   `versao bigint default 0`, `atualizado_em timestamptz`, `deletado boolean default false` em
   `carteira`, `categoria`, `forma_pagamento`, `mercado`, `unidade_medida`, `parametro`, `preferencia`,
   `lancamento`, `recorrencia`, `parcela`, `rateio`, `participante_rateio`, `lista_compra`,
-  `item_compra`, `investimento`, `aporte`, `posicao_investimento`.
+  `item_compra`, `cotacao_item`, `preco_historico`, `investimento`, `aporte`, `posicao_investimento`.
 - **Índices:** `ix_<tabela>_atualizado_em` para os deltas; `uk_<tabela>_uuid`.
 - **Notas:** `deletado=true` funciona como tombstone; `versao` detecta conflito; merge é
   **last-write-wins** por `atualizado_em`.

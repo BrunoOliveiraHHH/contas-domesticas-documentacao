@@ -1,0 +1,18 @@
+# Tarefa — Fechar lista → despesas por estabelecimento (UI) · App
+> Sprint 2 (21/07–04/08/2026) · Bloco: Compras · Item Fechar · Depende: compras, despesa, API fechar
+
+## O que fazer
+Fechar a lista gerando as despesas por estabelecimento.
+
+## Passo a passo
+1. Ação "Fechar": mostra o resumo por estabelecimento e confirma.
+2. Exibe as despesas geradas (uma por loja escolhida).
+
+## Onde mexer
+- `ui/compras/*`
+
+## Critério de pronto (DoD)
+- [ ] Fechar gera as despesas por estabelecimento; lista vira FECHADA
+
+## Como testar
+Verificação estática + build no Android Studio.

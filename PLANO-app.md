@@ -187,32 +187,34 @@ será construída (hoje só a infra existe).
 
 ## 22. Compras — Lista (Room + Tela)
 
-- **Room:** `ListaCompraEntity` + DAO. **Telas:** lista de listas + form (nome, tipo, mercado,
-  carteira). **Integração:** `ListaCompraApi`.
+- **Room:** `ListaCompraEntity` + DAO. **Telas:** histórico de listas (ABERTA/FECHADA/ARQUIVADA) + form
+  (nome, tipo, carteira). **Integração:** `ListaCompraApi`. Listas não fechadas ficam no histórico e
+  podem ser **duplicadas** (reutilização).
 - **Depende:** 8, 11.
-- **Aceite:** CRUD; totais estimado/real exibidos.
+- **Aceite:** CRUD; histórico com filtro por status; subtotais por estabelecimento.
 
-## 23. Compras — Item com unidade/preço
+## 23. Compras — Item + escolha de estabelecimento
 
 - **Room:** `ItemCompraEntity` + DAO. **Telas:** adicionar/editar item (produto, categoria, quantidade,
-  unidade, preço estimado/real, comprado).
-- **Regras:** total = qtd × preço; marcar comprado pede preço real.
+  unidade) e **escolher o estabelecimento** (grava o mercado escolhido; preço vem da cotação).
 - **Depende:** 22, 12, api-21.
-- **Aceite:** itens com cálculo de total; marcar comprado atualiza total real.
+- **Aceite:** item com estabelecimento escolhido e preço correspondente.
 
-## 24. Compras — Histórico de preço
+## 24. Compras — Cotação e comparação de preços
 
-- **O que é:** comparar onde o produto está mais barato.
-- **Telas:** ao digitar o produto, mostra o menor preço/unidade e histórico por mercado.
-- **Depende:** 23, api-22.
-- **Aceite:** histórico e menor preço por unidade base exibidos.
+- **O que é:** cadastrar o preço do item em vários estabelecimentos, comparar e escolher onde comprar.
+- **Telas:** adicionar cotações (estabelecimento + preço) por item; lista ordenada por preço/unidade,
+  com destaque do menor. (Histórico de preço realizado alimenta a tendência entre listas.)
+- **Depende:** 23, api-cotação.
+- **Aceite:** comparação por preço/unidade; menor preço destacado.
 
-## 25. Compras — Fechar lista → despesa
+## 25. Compras — Fechar lista → despesa por estabelecimento
 
-- **O que é:** concluir a compra gerando 1 despesa.
-- **Telas:** ação "Fechar lista" → confirma total → cria despesa (via API) → mostra vínculo.
+- **O que é:** concluir a compra gerando **uma despesa por estabelecimento** escolhido.
+- **Telas:** ação "Fechar" → resumo por estabelecimento → confirma → mostra as despesas geradas (uma
+  por loja).
 - **Depende:** 24, 18, api-23.
-- **Aceite:** fechar gera 1 despesa com o total; lista marcada como fechada; não duplica.
+- **Aceite:** fechar gera as despesas por estabelecimento; lista vira FECHADA; não duplica.
 
 ## 26. Investimento — Room + Telas
 

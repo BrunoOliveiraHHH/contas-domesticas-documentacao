@@ -6,7 +6,7 @@ Criar a migração Flyway **V16** que cria a tabela `item_compra` e espelhar os 
 
 ## Passo a passo
 1. Criar `src/main/resources/db/migration/V16__cria_tabela_item_compra.sql`.
-2. Colunas: id `bigint generated always as identity` + lista_compra_id (FK), produto, categoria_id opcional, quantidade numeric(12,3), unidade_medida_id, preco_unitario_estimado, preco_unitario_real, comprado boolean, mercado_id override + auditoria (`criado_em`, `criado_por`, `atualizado_em`, `atualizado_por`).
+2. Colunas: id `bigint generated always as identity` + lista_compra_id (FK), produto, categoria_id, quantidade numeric(12,3), unidade_medida_id, mercado_escolhido_id, preco_unitario (do estabelecimento escolhido), comprado boolean + auditoria (`criado_em`, `criado_por`, `atualizado_em`, `atualizado_por`).
 3. Adicionar PK (`pk_item_compra`) e índices/único necessários.
 4. Espelhar em `contas-domesticas-db/ddl/{tables,primary,index}/item_compra.sql`.
 

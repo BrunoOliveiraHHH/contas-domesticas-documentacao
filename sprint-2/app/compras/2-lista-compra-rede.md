@@ -7,7 +7,7 @@ Consumir a API de Lista de Compra e criar o repositório (Room + API).
 ## Passo a passo
 1. `data/remote/ListaCompraApi.kt` (endpoints `/api/v1/listas-compra`).
 2. `data/remote/dto/ListaCompraDto.kt`.
-3. `data/repository/ListaCompraRepository.kt` (fonte local + remota; sincronização).
+3. `data/repository/ListaCompraRepository.kt`.
 
 ## Onde mexer
 - `data/remote/ListaCompraApi.kt`, `data/remote/dto/ListaCompraDto.kt`, `data/repository/ListaCompraRepository.kt`

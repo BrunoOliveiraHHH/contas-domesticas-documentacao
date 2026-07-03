@@ -6,7 +6,7 @@ Criar a entidade JPA `Mercado` (estende `BaseEntity`) e o repositório Spring Da
 
 ## Passo a passo
 1. Criar `domain/Mercado.java` com `@Entity @Table(name="mercado")` estendendo `BaseEntity`.
-2. Mapear os campos: nome, tipo (SUPERMERCADO/CONSTRUCAO/FARMACIA/OUTRO), endereco, bairro, ativo.
+2. Mapear os campos: nome, tipo (SUPERMERCADO/ARMAZEM/MERCEARIA/CONSTRUCAO/FARMACIA/OUTRO), endereco, bairro, ativo.
 3. Criar `repository/MercadoRepository.java` (`JpaRepository<Mercado, Long>`) com as queries necessárias.
 
 ## Onde mexer

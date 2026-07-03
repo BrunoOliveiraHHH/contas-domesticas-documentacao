@@ -6,7 +6,7 @@ Criar a entidade JPA `ListaCompra` (estende `BaseEntity`) e o repositório Sprin
 
 ## Passo a passo
 1. Criar `domain/ListaCompra.java` com `@Entity @Table(name="lista_compra")` estendendo `BaseEntity`.
-2. Mapear os campos: nome, tipo (MANTIMENTOS/CONSTRUCAO), mercado_id opcional, carteira_id, data, status (ABERTA/FECHADA), despesa_gerada_id.
+2. Mapear os campos: nome, tipo (MANTIMENTOS/CONSTRUCAO), carteira_id, data, status (ABERTA/FECHADA/ARQUIVADA).
 3. Criar `repository/ListaCompraRepository.java` (`JpaRepository<ListaCompra, Long>`) com as queries necessárias.
 
 ## Onde mexer

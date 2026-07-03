@@ -6,7 +6,7 @@ Fechar a cobertura automatizada do ListaCompra (repository, service, controller)
 
 ## Passo a passo
 1. `ListaCompraRepositoryTest` (`@DataJpaTest`): persistência e queries.
-2. `ListaCompraServiceTest` (Mockito): totais derivados, filtro por status.
+2. `ListaCompraServiceTest` (Mockito): totais por estabelecimento, filtro por status (inclui não fechadas).
 3. `ListaCompraControllerIntegrationTest` (`MockMvc`): CRUD + erros.
 
 ## Onde mexer

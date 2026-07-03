@@ -6,7 +6,7 @@ Criar a migração Flyway **V15** que cria a tabela `lista_compra` e espelhar os
 
 ## Passo a passo
 1. Criar `src/main/resources/db/migration/V15__cria_tabela_lista_compra.sql`.
-2. Colunas: id `bigint generated always as identity` + nome, tipo (MANTIMENTOS/CONSTRUCAO), mercado_id opcional, carteira_id, data, status (ABERTA/FECHADA), despesa_gerada_id + auditoria (`criado_em`, `criado_por`, `atualizado_em`, `atualizado_por`).
+2. Colunas: id `bigint generated always as identity` + nome, tipo (MANTIMENTOS/CONSTRUCAO), carteira_id, data, status (ABERTA/FECHADA/ARQUIVADA) + auditoria (`criado_em`, `criado_por`, `atualizado_em`, `atualizado_por`).
 3. Adicionar PK (`pk_lista_compra`) e índices/único necessários.
 4. Espelhar em `contas-domesticas-db/ddl/{tables,primary,index}/lista_compra.sql`.
 

@@ -262,9 +262,12 @@ H2 (profile `test`). Segurança hoje é `permitAll` temporário até o JWT entra
 
 - **O que é:** a lista de compras (mantimentos ou construção).
 - **Entidade `ListaCompra`** (extends `EntidadeAuditavel`): `nome`, `tipo`
-  (`MANTIMENTOS`/`CONSTRUCAO`), `mercado` (opcional), `carteira`, `data`, `status`
-  (`ABERTA`/`FECHADA`), `despesaGerada` (FK opcional, preenchida ao fechar).
-- **Endpoints:** `/api/v1/listas-compra` (CRUD) + filtro por status/tipo.
+  (`MANTIMENTOS`/`CONSTRUCAO`), `carteira`, `data`, `status` (`ABERTA`/`FECHADA`/`ARQUIVADA`).
+  O estabelecimento é escolhido **por item** (não há mercado único da lista). Listas **não fechadas
+  permanecem no histórico** (reutilizáveis via duplicar). Fechar gera **1 despesa por estabelecimento**
+  (vínculo 1-N).
+- **Endpoints:** `/api/v1/listas-compra` (CRUD, filtro por status inclui não fechadas) +
+  `/{id}/duplicar` (reutilizar).
 - **Depende:** 6, 9.
 - **Aceite:** CRUD; totais estimado/real derivados dos itens.
 - **Testes:** repository (totais), controller (CRUD).
@@ -273,8 +276,11 @@ H2 (profile `test`). Segurança hoje é `permitAll` temporário até o JWT entra
 
 - **O que é:** cada produto da lista, com unidade e preço.
 - **Entidade `ItemCompra`** (extends `EntidadeAuditavel`): `listaCompra` (FK), `produto` (descrição),
-  `categoria` (opcional), `quantidade` (BigDecimal), `unidadeMedida` (FK), `precoUnitarioEstimado`,
-  `precoUnitarioReal`, `comprado` (boolean), `mercado` (override opcional).
+  `categoria` (opcional), `quantidade` (BigDecimal), `unidadeMedida` (FK), `mercadoEscolhido` (FK),
+  `precoUnitario` (do estabelecimento escolhido), `comprado` (boolean).
+- **Cotação (`CotacaoItem`):** `itemCompra` (FK), `mercado` (FK), `precoUnitario` — **várias por item**,
+  para **comparar** (menor preço por unidade base) e **escolher** onde comprar. `PUT /itens/{id}/escolha`
+  grava o `mercadoEscolhido` e copia o preço da cotação escolhida.
 - **Endpoints:** `/api/v1/listas-compra/{id}/itens` (CRUD).
 - **Regras:** total do item = `quantidade × preço` (real se comprado, senão estimado); marcar comprado
   exige `precoUnitarioReal`.
@@ -294,14 +300,16 @@ H2 (profile `test`). Segurança hoje é `permitAll` temporário até o JWT entra
 - **Aceite:** compra alimenta o histórico; consulta retorna evolução e menor preço/unidade.
 - **Testes:** service (normalização + menor preço), controller.
 
-## 23. Compras — Fechar lista → gera despesa
+## 23. Compras — Fechar lista → gera despesa por estabelecimento
 
-- **O que é:** ao concluir a compra, criar **uma despesa** com o total real da lista.
-- **Endpoint:** `POST /api/v1/listas-compra/{id}/fechar` → cria `Lancamento` (`DESPESA`, valor = total
-  real, categoria default por tipo de lista: Mercado/Obra), marca `status=FECHADA` e vincula
-  `despesaGerada`.
-- **Regras:** idempotente (lista já fechada não gera outra despesa); todos os itens comprados têm preço
-  real.
+- **O que é:** ao concluir a compra, **agrupar os itens pelo estabelecimento escolhido** e criar **uma
+  despesa por estabelecimento** (afinal se paga separado em cada loja).
+- **Endpoint:** `POST /api/v1/listas-compra/{id}/fechar` → para cada `mercadoEscolhido` cria um
+  `Lancamento` (`DESPESA`, valor = total daquele estabelecimento), marca `status=FECHADA`, vincula as
+  despesas à lista (1-N) e grava o `PrecoHistorico` dos itens.
+- **Regras:** idempotente (lista já fechada não gera novas despesas); item exige estabelecimento
+  escolhido. Listas **não** fechadas ficam como `ABERTA`/`ARQUIVADA` no histórico e podem ser
+  **duplicadas** para reutilização.
 - **Depende:** 20, 21, 16.
 - **Aceite:** fechar gera 1 despesa com o total correto e vínculo; refechar não duplica.
 - **Testes:** service (geração única + total), controller (fluxo fechar).

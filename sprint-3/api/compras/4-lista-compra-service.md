@@ -6,7 +6,7 @@ Criar o service com o CRUD e as regras de negócio do ListaCompra.
 
 ## Passo a passo
 1. `service/ListaCompraService.java` (`@Service`, `@RequiredArgsConstructor`): listar, buscarPorId, criar, atualizar, remover.
-2. Regras específicas: totais estimado/real derivados dos itens; filtro por status/tipo.
+2. Regras específicas: listas não fechadas permanecem no histórico (reutilizáveis); subtotal por estabelecimento derivado dos itens e da cotação escolhida.
 3. Lançar `AplicacaoException(mensagem, HttpStatus)` nos erros (404, 409, 400 conforme o caso).
 
 ## Onde mexer
@@ -17,4 +17,4 @@ Criar o service com o CRUD e as regras de negócio do ListaCompra.
 - [ ] Erros usam `AplicacaoException` (ProblemDetail)
 
 ## Como testar
-`ListaCompraServiceTest` (Mockito): totais derivados, filtro por status.
+`ListaCompraServiceTest` (Mockito): totais por estabelecimento, filtro por status (inclui não fechadas).

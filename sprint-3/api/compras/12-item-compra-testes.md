@@ -6,7 +6,7 @@ Fechar a cobertura automatizada do ItemCompra (repository, service, controller).
 
 ## Passo a passo
 1. `ItemCompraRepositoryTest` (`@DataJpaTest`): persistência e queries.
-2. `ItemCompraServiceTest` (Mockito): cálculo do total; regra comprado exige preço real.
+2. `ItemCompraServiceTest` (Mockito): preço a partir do estabelecimento escolhido; regra de comprado.
 3. `ItemCompraControllerIntegrationTest` (`MockMvc`): CRUD + erros.
 
 ## Onde mexer
